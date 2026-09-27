@@ -27,6 +27,9 @@ export default defineConfig({
       workbox: {
         // La fuente se sirve desde la app: entra en el precache y funciona sin conexión desde la primera visita
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Las rutas reservadas de Firebase Hosting (/__/auth/handler del login con Google, /__/firebase/…)
+        // tienen que llegar al servidor: si el service worker las responde con index.html, el login no se completa
+        navigateFallbackDenylist: [/^\/__\//],
       },
     }),
   ],

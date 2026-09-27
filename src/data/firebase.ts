@@ -58,13 +58,19 @@ export async function signInWithGoogle(): Promise<void> {
   }
 }
 
-// Al volver de la redirección, el login correcto llega por watchAuth; aquí solo se recoge el error
-export async function redirectSignInError(): Promise<boolean> {
+// Código de Firebase (p. ej. "auth/operation-not-allowed") para mostrarlo junto al mensaje
+export function authErrorCode(err: unknown): string {
+  return (err as { code?: string } | null)?.code ?? 'desconocido'
+}
+
+// Al volver de la redirección, el login correcto llega por watchAuth; aquí solo se recoge el error (su código)
+export async function redirectSignInError(): Promise<string | null> {
   try {
     await getRedirectResult(init().auth)
-    return false
-  } catch {
-    return true
+    return null
+  } catch (err) {
+    console.error('Login por redirección fallido', err)
+    return authErrorCode(err)
   }
 }
 

@@ -65,21 +65,25 @@ function LoginScreen() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
+  // El código de Firebase va entre paréntesis: basta con él para saber qué falló
+  const failed = (code: string) => setError(`No se pudo iniciar sesión (${code}). Inténtalo de nuevo.`)
+
   // Si se vuelve de la redirección de Google con un error, se muestra aquí
   useEffect(() => {
-    import('./data/firebase').then(({ redirectSignInError }) => redirectSignInError()).then((failed) => {
-      if (failed) setError('No se pudo iniciar sesión. Inténtalo de nuevo.')
+    import('./data/firebase').then(({ redirectSignInError }) => redirectSignInError()).then((code) => {
+      if (code) failed(code)
     })
   }, [])
 
   const login = async () => {
     setError('')
     setBusy(true)
+    const { signInWithGoogle, authErrorCode } = await import('./data/firebase')
     try {
-      const { signInWithGoogle } = await import('./data/firebase')
       await signInWithGoogle()
-    } catch {
-      setError('No se pudo iniciar sesión. Inténtalo de nuevo.')
+    } catch (err) {
+      console.error('Login fallido', err)
+      failed(authErrorCode(err))
     } finally {
       // Con redirección la promesa no termina (la página se va a Google) y el botón sigue ocupado
       setBusy(false)
