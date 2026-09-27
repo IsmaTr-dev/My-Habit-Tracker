@@ -110,9 +110,10 @@ describe('mood', () => {
   }
   const scoreLum = (score: number) => lum(hslToRgb(scoreColor(score)))
 
+  // Con daltonismo rojo-verde solo queda la luminosidad: cada tramo debe separarse de forma apreciable
   it('la escala gana luminosidad de rojo a verde', () => {
-    expect(scoreLum(0)).toBeLessThan(scoreLum(5))
-    expect(scoreLum(5)).toBeLessThan(scoreLum(10))
+    expect(scoreLum(5) - scoreLum(0)).toBeGreaterThan(0.1)
+    expect(scoreLum(10) - scoreLum(5)).toBeGreaterThan(0.1)
   })
 
   it('la tinta (--ink) se lee sobre cualquier color de la escala (WCAG AA, 4,5:1)', () => {

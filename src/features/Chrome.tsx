@@ -57,11 +57,13 @@ export function RibbonHandle({ mode }: { mode: 'open' | 'close' }) {
 
 interface HeaderProps {
   dayNav?: boolean
+  // Sustituye la fila "mes + día" (Stats pone ahí el mes que se está consultando)
+  row?: ReactNode
   children?: ReactNode
 }
 
 // Cabecera común: mes, día (con ‹ › para ayer) y cinta del calendario
-export function Header({ dayNav, children }: HeaderProps) {
+export function Header({ dayNav, row, children }: HeaderProps) {
   const today = useApp((s) => s.today)
   const viewingYesterday = useApp((s) => s.viewingYesterday)
   const setViewingYesterday = useApp((s) => s.setViewingYesterday)
@@ -71,16 +73,20 @@ export function Header({ dayNav, children }: HeaderProps) {
   return (
     <header className={`header ${dayNav && viewingYesterday ? 'yesterday' : ''}`}>
       <div className="header-row">
-        <h1 className="month-title">{monthName(monthOf(shown))}</h1>
-        <div className="day-nav">
-          {dayNav && !viewingYesterday && (
-            <button type="button" className="arrow" aria-label="Ver ayer" onClick={() => setViewingYesterday(true)}>‹</button>
-          )}
-          <span className="day-number" aria-label={`Día ${dayOfMonth(shown)}`}>{dayOfMonth(shown)}</span>
-          {dayNav && viewingYesterday && (
-            <button type="button" className="arrow" aria-label="Volver a hoy" onClick={() => setViewingYesterday(false)}>›</button>
-          )}
-        </div>
+        {row ?? (
+          <>
+            <h1 className="month-title">{monthName(monthOf(shown))}</h1>
+            <div className="day-nav">
+              {dayNav && !viewingYesterday && (
+                <button type="button" className="arrow" aria-label="Ver ayer" onClick={() => setViewingYesterday(true)}>‹</button>
+              )}
+              <span className="day-number" aria-label={`Día ${dayOfMonth(shown)}`}>{dayOfMonth(shown)}</span>
+              {dayNav && viewingYesterday && (
+                <button type="button" className="arrow" aria-label="Volver a hoy" onClick={() => setViewingYesterday(false)}>›</button>
+              )}
+            </div>
+          </>
+        )}
       </div>
       {dayNav && viewingYesterday && <span className="stamp" role="status">Ayer</span>}
       {children}

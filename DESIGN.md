@@ -23,11 +23,13 @@ Bullet journal escrito a mano: papel punteado, trazos imperfectos (rough.js, mot
 
 **Hábitos:** 10 pasteles (`PASTELS` en `src/domain/types.ts`), uno por hábito, relleno rayado. En las barras de Stats el rayado lleva un 15 % de tinta para que los pasteles claros se vean sobre el papel.
 
-**Ánimo:** escala rojo `hsl(356 62% 66%)` → amarillo `hsl(42 88% 63%)` → verde `hsl(135 45% 72%)` con luminancia creciente (legible con daltonismo rojo-verde). La tinta se lee sobre cualquier punto de la escala (≥ 4,5:1, cubierto por test). En la escala de puntos el relleno toma el color de la nota ya ajustada a la polaridad: Pereza 2 se pinta verde.
+**Ánimo:** escala rojo `hsl(356 46% 66%)` → amarillo `hsl(42 58% 62%)` → verde `hsl(135 36% 78%)`, con saturación contenida para convivir con los pasteles. La luminancia crece de forma apreciable en cada tramo (0,31 → 0,48 → 0,64), legible con daltonismo rojo-verde, y la tinta se lee sobre cualquier punto de la escala (≥ 4,5:1). Ambas reglas están cubiertas por test. La leyenda del calendario se genera desde `scoreColor`, sin colores repetidos en el CSS. En la escala de puntos el relleno toma el color de la nota ya ajustada a la polaridad: Pereza 2 se pinta verde.
 
 ## Tipografía
 
 Excalifont (la de Excalidraw, licencia OFL), solo el subconjunto latino servido desde jsDelivr y cacheado por la PWA. Base 18 px.
+
+Solo existe el peso Regular: `font-synthesis: none` evita la negrita borrosa que inventa el navegador. El énfasis se hace con tamaño, color (`--ink` frente a `--ink-soft`), subrayado ondulado o rayado. El subconjunto no trae flechas (↑ ↓ →): se dibujan con `SketchArrow`.
 
 ## Iconografía
 
@@ -42,6 +44,9 @@ Nada de emojis ni controles nativos a la vista: todo se dibuja con rough.js. Las
 | `SketchBar` | Barra con relleno rayado a −50° |
 | `DotScale` | Notas 0–10: once círculos a mano que se rellenan hasta la nota; se toca o se arrastra la fila y se guarda al soltar |
 | `DoodleFace` | Seis caritas a tinta en lienzo 100×100; sin cabeza dentro de las celdas del calendario |
+| `SketchArrow` | Flecha a tinta que toma el color del texto (polaridad "↑ mejor" / "↓ mejor") |
+| Filtro `#wobble` | Trazo irregular (SVG `feTurbulence` + `feDisplacementMap`) para lo que se dibuja con CSS: cuadrícula de Stats, marcos de mini-meses y celdas del mes. En las celdas va en un `::before` para no deformar el texto |
+| Cabecera | Mes + día en Hábitos y Ánimo. En Stats, el mes consultado (año debajo) con ‹ › para cambiar de mes |
 | Botones | Área táctil mínima 44 × 44 px |
 | Cinta | Arriba a la derecha; tocar o tirar abajo abre el calendario, subirla lo cierra |
 

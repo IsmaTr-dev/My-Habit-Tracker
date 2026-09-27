@@ -47,6 +47,13 @@ export function App() {
 
   return (
     <div className="app">
+      {/* Filtro "trazo a mano" para los bordes que se dibujan con CSS (cuadrícula de Stats, calendario) */}
+      <svg className="svg-defs" aria-hidden="true" focusable="false">
+        <filter id="wobble">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" />
+          <feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
       {content}
     </div>
   )

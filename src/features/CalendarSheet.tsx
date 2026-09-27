@@ -8,7 +8,10 @@ import { HabitChecklist } from './HabitChecklist'
 import { MoodForm } from './MoodForm'
 import { DoodleFace } from '../ui/DoodleFace'
 
-const WEEKDAY_NAMES = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
+// Leyenda generada desde la propia escala (con paradas intermedias, porque CSS interpola en RGB y la escala en HSL)
+const LEGEND_GRADIENT = `linear-gradient(90deg, ${[0, 2.5, 5, 7.5, 10].map(scoreColor).join(', ')})`
+
+const WEEKDAY_NAMES =['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
 
 function dayStyle(data: DataState, date: ISODate) {
   const score = dayScore(data.days[date], data.metrics)
@@ -108,7 +111,7 @@ function MonthView({ month }: { month: MonthKey }) {
               key={d}
               type="button"
               className={`day-cell ${future ? 'future' : ''} ${d === today ? 'today' : ''}`}
-              style={{ background }}
+              style={background ? { ['--bg' as string]: background } : undefined}
               disabled={future}
               onClick={() => openCalendar({ level: 'day', date: d })}
               aria-label={`${dayOfMonth(d)} de ${monthName(month)}${score !== null ? `, ánimo ${score.toFixed(1)}` : ''}${emotion ? `, ${emotion.label}` : ''}`}
@@ -120,7 +123,7 @@ function MonthView({ month }: { month: MonthKey }) {
         })}
       </div>
       <div className="legend" aria-hidden="true">
-        <span>0</span><span className="legend-bar" /><span>10</span>
+        <span>0</span><span className="legend-bar" style={{ background: LEGEND_GRADIENT }} /><span>10</span>
       </div>
     </>
   )
