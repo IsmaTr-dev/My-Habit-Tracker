@@ -2,7 +2,7 @@ import { dayOfMonth, monthDays, monthName, monthOf, WEEKDAYS_ES, weekdayMon0, ad
 import { dayScore, monthMoodSummary, scoreColor } from '../domain/mood'
 import { isEditable } from '../domain/rules'
 import { EMOTIONS, type DataState, type ISODate, type MonthKey } from '../domain/types'
-import { calendarBack, openCalendar, replaceCalendar, useApp, type CalendarView } from '../store'
+import { calendarBack, closeCalendar, openCalendar, replaceCalendar, useApp, type CalendarView } from '../store'
 import { RibbonHandle } from './Chrome'
 import { HabitChecklist } from './HabitChecklist'
 import { MoodForm } from './MoodForm'
@@ -84,7 +84,28 @@ function YearView({ year }: { year: number }) {
           </button>
         ))}
       </div>
+      <SessionFooter />
     </>
+  )
+}
+
+// Pie de la vista anual: cuenta con la que se ha entrado y cerrar sesión (solo con Firebase)
+function SessionFooter() {
+  const user = useApp((s) => s.user)
+  const mode = useApp((s) => s.repo?.mode)
+  if (mode !== 'firebase' || !user) return null
+
+  const logout = async () => {
+    closeCalendar()
+    const { logout } = await import('../data/firebase')
+    await logout()
+  }
+
+  return (
+    <footer className="session">
+      <span>{user.name || 'Sesión iniciada'}</span>
+      <button type="button" className="text-link" onClick={logout}>Cerrar sesión</button>
+    </footer>
   )
 }
 

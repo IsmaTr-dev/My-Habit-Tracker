@@ -24,10 +24,23 @@ npx firebase-tools deploy --only firestore:rules
 
 ## Publicar
 
+El `.env` tiene que existir antes del build: sin él, la versión publicada queda en modo local (sin login ni sincronización).
+
 ```bash
 npm run build
 npx firebase-tools deploy --only hosting
 ```
+
+## Instalar en el móvil
+
+- **Android (Chrome):** abrir la web → ⋮ → *Instalar aplicación*.
+- **iPhone (Safari):** abrir la web → *Compartir* → *Añadir a pantalla de inicio*. La app instalada no comparte sesión con Safari: se entra de nuevo dentro de ella.
+
+Desde la pantalla de inicio el login con Google va por redirección (la ventana emergente no vuelve a la app). Para que Safari no bloquee la vuelta, la app debe abrirse desde el mismo dominio que `VITE_FIREBASE_AUTH_DOMAIN` (por defecto `<proyecto>.firebaseapp.com`): instálala desde esa dirección, no desde `<proyecto>.web.app`.
+
+## Iconos
+
+Generados a partir de `design/icono-cuaderno.png` (trazo en color tinta, fondo papel y cinta roja) en `public/icons/`: favicon 32 px, `apple-touch-icon` 180 px opaco para iOS y 192/512 px + versión *maskable* para Android.
 
 ## Scripts
 

@@ -63,13 +63,26 @@ export function App() {
 function LoginScreen() {
   const today = useApp((s) => s.today)
   const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  // Si se vuelve de la redirección de Google con un error, se muestra aquí
+  useEffect(() => {
+    import('./data/firebase').then(({ redirectSignInError }) => redirectSignInError()).then((failed) => {
+      if (failed) setError('No se pudo iniciar sesión. Inténtalo de nuevo.')
+    })
+  }, [])
+
   const login = async () => {
     setError('')
+    setBusy(true)
     try {
       const { signInWithGoogle } = await import('./data/firebase')
       await signInWithGoogle()
     } catch {
       setError('No se pudo iniciar sesión. Inténtalo de nuevo.')
+    } finally {
+      // Con redirección la promesa no termina (la página se va a Google) y el botón sigue ocupado
+      setBusy(false)
     }
   }
   return (
@@ -85,7 +98,9 @@ function LoginScreen() {
         <span className="cover-ribbon" aria-hidden="true"><Ribbon length={84} /></span>
       </div>
       <p className="intro">Hábitos, estadísticas y ánimo, como en un cuaderno de papel.</p>
-      <SketchButton seed="login" variant="primary" onClick={login}>Entrar con Google</SketchButton>
+      <SketchButton seed="login" variant="primary" onClick={login} disabled={busy}>
+        {busy ? 'Abriendo Google…' : 'Entrar con Google'}
+      </SketchButton>
       {error && <p className="error" role="alert">{error}</p>}
     </main>
   )

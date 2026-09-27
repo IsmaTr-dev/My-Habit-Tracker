@@ -37,6 +37,8 @@ Solo existe el peso Regular: `font-synthesis: none` evita la negrita borrosa que
 
 Nada de emojis ni controles nativos a la vista: todo se dibuja con rough.js. Las emociones son caritas a tinta (`DoodleFace`), sin color.
 
+Icono de la app: cuaderno con cierre a línea en `--ink` sobre `--paper`, con la cinta en `--ribbon` (origen en `design/icono-cuaderno.png`). El favicon de 32 px lleva el trazo engrosado para que no se vuelva gris.
+
 ## Componentes
 
 | Componente | Regla |
