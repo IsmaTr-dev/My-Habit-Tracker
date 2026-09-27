@@ -20,12 +20,13 @@ function roundedRect(x: number, y: number, w: number, h: number, r: number): str
   return `M${x + rr} ${y} H${x + w - rr} Q${x + w} ${y} ${x + w} ${y + rr} V${y + h - rr} Q${x + w} ${y + h} ${x + w - rr} ${y + h} H${x + rr} Q${x} ${y + h} ${x} ${y + h - rr} V${y + rr} Q${x} ${y} ${x + rr} ${y} Z`
 }
 
-export function Paths({ drawable }: { drawable: ReturnType<typeof gen.path> }) {
+// pathLength={1} normaliza la longitud del trazo para animarlo con stroke-dashoffset
+export function Paths({ drawable, pathLength }: { drawable: ReturnType<typeof gen.path>; pathLength?: number }) {
   return (
     <>
       {gen.toPaths(drawable).map((p, i) => (
         // Estilo en línea (no atributos) para que funcionen las variables CSS de color
-        <path key={i} d={p.d} style={{ stroke: p.stroke, strokeWidth: p.strokeWidth, fill: p.fill ?? 'none' }} strokeLinecap="round" />
+        <path key={i} d={p.d} pathLength={pathLength} style={{ stroke: p.stroke, strokeWidth: p.strokeWidth, fill: p.fill ?? 'none' }} strokeLinecap="round" />
       ))}
     </>
   )
@@ -88,7 +89,8 @@ export function SketchBox({ seed, radius = 12, fill, fillStyle = 'hachure', stro
 }
 
 // Casilla de verificación dibujada: caja + tick de rotulador
-export function SketchCheck({ checked, color, seed, size = 30 }: { checked: boolean; color: string; seed: string; size?: number }) {
+// animate: el tick se dibuja y la mancha aparece (solo al marcar, no al montar la pantalla)
+export function SketchCheck({ checked, color, seed, size = 30, animate }: { checked: boolean; color: string; seed: string; size?: number; animate?: boolean }) {
   const s = seedOf(seed)
   const box = useMemo(() => gen.path(roundedRect(3, 3, size - 6, size - 6, 6), { ...INK, seed: s }), [s, size])
   const tick = useMemo(
@@ -102,10 +104,10 @@ export function SketchCheck({ checked, color, seed, size = 30 }: { checked: bool
     [s, size, color],
   )
   return (
-    <svg className="sketch-check" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-      {checked && <Paths drawable={blob} />}
+    <svg className={`sketch-check ${animate ? 'animate' : ''}`} width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+      {checked && <g className="blob"><Paths drawable={blob} /></g>}
       <Paths drawable={box} />
-      {checked && <Paths drawable={tick} />}
+      {checked && <g className="tick"><Paths drawable={tick} pathLength={1} /></g>}
     </svg>
   )
 }

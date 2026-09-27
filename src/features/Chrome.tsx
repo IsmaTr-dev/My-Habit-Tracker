@@ -1,28 +1,21 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { dayOfMonth, monthName, monthOf } from '../domain/dates'
 import { closeCalendar, openCalendar, useApp, useViewDate, type Tab } from '../store'
+import { hintSeen, markHintSeen } from '../ui/hints'
 import { Ribbon, SketchBox } from '../ui/sketch'
 
 const HINT_KEY = 'cuaderno:cinta-vista'
-
-function ribbonHintSeen(): boolean {
-  try { return localStorage.getItem(HINT_KEY) === '1' } catch { return true }
-}
-
-function markRibbonHintSeen() {
-  try { localStorage.setItem(HINT_KEY, '1') } catch { /* sin almacenamiento: la pista volverá a salir */ }
-}
 
 // Cinta marcapáginas: se toca o se arrastra (hacia abajo para abrir, hacia arriba para cerrar)
 export function RibbonHandle({ mode }: { mode: 'open' | 'close' }) {
   const today = useApp((s) => s.today)
   const startY = useRef<number | null>(null)
   const actedByDrag = useRef(false)
-  const [peek] = useState(() => mode === 'open' && !ribbonHintSeen())
+  const [peek] = useState(() => mode === 'open' && !hintSeen(HINT_KEY))
 
   const act = () => {
     if (mode === 'open') {
-      markRibbonHintSeen()
+      markHintSeen(HINT_KEY)
       openCalendar({ level: 'year', year: Number(today.slice(0, 4)) })
     } else {
       closeCalendar()

@@ -134,7 +134,7 @@ export function MoodForm({ date, readOnly }: Props) {
       )}
 
       {!readOnly && (
-        <SketchButton seed="add-metric" className="add small" onClick={() => setAdding(true)} ariaLabel="Añadir ítem de ánimo">+</SketchButton>
+        <SketchButton seed="add-metric" className="add small" onClick={() => setAdding(true)} ariaLabel="Añadir ítem de ánimo">+ Añadir ítem</SketchButton>
       )}
 
       <SketchBox seed="notes" className="notes">
