@@ -86,6 +86,13 @@ Registro de decisiones tomadas en las rondas de refinamiento. Fuente de verdad p
 | Atrás del sistema | Sube un nivel | Ficha → mes → año → cerrar calendario |
 | Fuente | Excalifont | Decidida viendo la app implementada |
 
+## Ronda 11 — Revisión de diseño (2026-09-27)
+
+| Tema | Decisión | Notas |
+|---|---|---|
+| Paleta del ánimo | Menos saturada | Rojo 62→46 %, amarillo 88→58 %, verde 45→36 %. Sustituye a la escala de la ronda 3–4; se mantienen el orden rojo → amarillo → verde y la luminancia creciente |
+| Cabecera de Stats | Muestra el mes consultado, no el de hoy | Sustituye a "cabecera común" solo en Stats: mes grande, año debajo y ‹ › para cambiar de mes. Desaparece la segunda fila "‹ Septiembre 2026 ›" que repetía el mes |
+
 ## Valores por defecto (decididos sin preguntar — revisables)
 
 | Tema | Por defecto |

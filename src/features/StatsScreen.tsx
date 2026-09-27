@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { addMonths, dayOfMonth, monthDays, monthLabel, monthOf, WEEKDAYS_ES, weekdayMon0 } from '../domain/dates'
+import { addMonths, dayOfMonth, monthDays, monthName, monthOf, WEEKDAYS_ES, weekdayMon0 } from '../domain/dates'
 import { habitsForMonth } from '../domain/rules'
 import { bestStreakInMonth, currentStreak, habitMonthStats, isDone } from '../domain/stats'
 import type { DataState, Habit, ISODate, MonthKey } from '../domain/types'
@@ -31,7 +31,20 @@ export function StatsScreen() {
 
   return (
     <>
-      <Header />
+      {/* El mes consultado ocupa la cabecera: sin la fila duplicada "mes de hoy + mes consultado" */}
+      <Header
+        row={
+          <>
+            <h1 className="month-title">
+              {monthName(month)}<span className="month-year"> {month.slice(0, 4)}</span>
+            </h1>
+            <div className="day-nav">
+              <button type="button" className="arrow" onClick={() => go(-1)} disabled={!canPrev} aria-label="Mes anterior">‹</button>
+              <button type="button" className="arrow" onClick={() => go(1)} disabled={!canNext} aria-label="Mes siguiente">›</button>
+            </div>
+          </>
+        }
+      />
       <main
         className="screen stats"
         onPointerDown={(e) => { start.current = { x: e.clientX, y: e.clientY } }}
@@ -43,12 +56,6 @@ export function StatsScreen() {
           if (Math.abs(dx) > SWIPE_MIN && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
         }}
       >
-        <div className="month-nav">
-          <button type="button" className="arrow" onClick={() => go(-1)} disabled={!canPrev} aria-label="Mes anterior">‹</button>
-          <h2>{monthLabel(month)}</h2>
-          <button type="button" className="arrow" onClick={() => go(1)} disabled={!canNext} aria-label="Mes siguiente">›</button>
-        </div>
-
         <div className="segmented" role="tablist" aria-label="Tipo de vista">
           <SketchBox seed="segmented" radius={10}>
             <button type="button" role="tab" aria-selected={view === 'pct'} onClick={() => setView('pct')}>%</button>
