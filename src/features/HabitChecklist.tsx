@@ -15,6 +15,8 @@ interface Props {
   readOnly?: boolean
   // Pulsación larga: menú (editar/archivar) y arrastrar para reordenar
   manage?: boolean
+  // Se llama la primera vez que se usa la pulsación larga (para retirar la pista)
+  onManaged?(): void
 }
 
 interface DragState {
@@ -27,7 +29,7 @@ interface DragState {
   rows: { id: string; mid: number }[]
 }
 
-export function HabitChecklist({ date, readOnly, manage }: Props) {
+export function HabitChecklist({ date, readOnly, manage, onManaged }: Props) {
   const data = useApp((s) => s.data)
   const today = useApp((s) => s.today)
   const patchDay = useApp((s) => s.patchDay)
@@ -38,6 +40,8 @@ export function HabitChecklist({ date, readOnly, manage }: Props) {
   const [drag, setDrag] = useState<DragState | null>(null)
   const [menuFor, setMenuFor] = useState<Habit | null>(null)
   const [editing, setEditing] = useState<Habit | null>(null)
+  // Solo el hábito recién marcado anima su tick
+  const [justChecked, setJustChecked] = useState<string | null>(null)
   const timer = useRef<number | undefined>(undefined)
   const suppressClick = useRef(false)
   const listRef = useRef<HTMLUListElement>(null)
@@ -56,7 +60,9 @@ export function HabitChecklist({ date, readOnly, manage }: Props) {
   const toggle = (h: Habit) => {
     if (readOnly) return
     if (suppressClick.current) { suppressClick.current = false; return }
-    patchDay(date, { habitsDone: { [h.id]: !isDone(data.days, date, h.id) } })
+    const done = !isDone(data.days, date, h.id)
+    setJustChecked(done ? h.id : null)
+    patchDay(date, { habitsDone: { [h.id]: done } })
   }
 
   const onPointerDown = (e: RPointerEvent, h: Habit) => {
@@ -97,6 +103,7 @@ export function HabitChecklist({ date, readOnly, manage }: Props) {
     setDrag(null)
     if (!d?.lifted) return
     suppressClick.current = true
+    onManaged?.()
     const habit = habits.find((h) => h.id === d.id)
     if (!d.moved) { if (habit) setMenuFor(habit); return }
     reorder(d)
@@ -144,7 +151,7 @@ export function HabitChecklist({ date, readOnly, manage }: Props) {
               >
                 <SketchBox seed={`habit-${h.id}`} fill={done ? h.color : undefined}>
                   <span className="habit-name">{h.name}</span>
-                  <SketchCheck checked={done} color={h.color} seed={`check-${h.id}`} />
+                  <SketchCheck checked={done} color={h.color} seed={`check-${h.id}`} animate={justChecked === h.id} />
                 </SketchBox>
               </button>
             </li>

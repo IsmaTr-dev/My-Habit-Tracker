@@ -53,3 +53,9 @@ Nada de emojis ni controles nativos a la vista: todo se dibuja con rough.js. Las
 ## Movimiento
 
 150–300 ms, solo con significado (despliegue del calendario, subida de hojas, pista de la cinta la primera vez). `prefers-reduced-motion` desactiva todas las animaciones.
+
+Al marcar un hábito, la mancha de color cae (180 ms) y el tick se traza (240 ms). Solo en el hábito que se acaba de marcar, nunca al montar la pantalla. Sin movimiento, el tick aparece entero.
+
+## Pistas
+
+Las pistas de uso (cinta del calendario, "Mantén pulsado un hábito…") salen hasta que se usa el gesto una vez y se recuerdan en el navegador (`src/ui/hints.ts`).

@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import { monthOf } from '../domain/dates'
-import { activeHabitCount, newId } from '../domain/rules'
+import { activeHabitCount, habitsForDay, newId } from '../domain/rules'
+import { isDone } from '../domain/stats'
 import { MAX_HABITS_PER_MONTH } from '../domain/types'
 import { useApp, useViewDate } from '../store'
 import { HabitEditor } from '../ui/editors'
+import { hintSeen, markHintSeen } from '../ui/hints'
 import { Modal, SketchButton } from '../ui/Modal'
 import { SketchBox } from '../ui/sketch'
 import { Header } from './Chrome'
 import { HabitChecklist } from './HabitChecklist'
+
+const LONG_PRESS_HINT = 'cuaderno:pulsacion-larga-vista'
 
 export function HabitsScreen() {
   const data = useApp((s) => s.data)
@@ -18,8 +22,18 @@ export function HabitsScreen() {
   const page = data.months[monthOf(date)]
   const [adding, setAdding] = useState(false)
   const [editingMantra, setEditingMantra] = useState(false)
+  // La pista de la pulsación larga desaparece en cuanto se usa una vez
+  const [showTip, setShowTip] = useState(() => !hintSeen(LONG_PRESS_HINT))
 
   const full = activeHabitCount(data, page) >= MAX_HABITS_PER_MONTH
+  const dayHabits = habitsForDay(data, date)
+  const doneCount = dayHabits.filter((h) => isDone(data.days, date, h.id)).length
+
+  const learnedLongPress = () => {
+    if (!showTip) return
+    markHintSeen(LONG_PRESS_HINT)
+    setShowTip(false)
+  }
 
   const addHabit = (name: string, color: string) => {
     if (!page) return
@@ -38,17 +52,21 @@ export function HabitsScreen() {
         </button>
       </Header>
       <main className="screen">
-        <HabitChecklist date={date} manage />
+        {dayHabits.length > 0 && (
+          <p className="day-progress">
+            {doneCount} de {dayHabits.length} hechos{doneCount === dayHabits.length && ' · día completo'}
+          </p>
+        )}
+        <HabitChecklist date={date} manage onManaged={learnedLongPress} />
         <SketchButton
           seed="add-habit"
           className="add"
           onClick={() => setAdding(true)}
           disabled={full || !page}
-          ariaLabel={full ? 'Máximo de 10 hábitos este mes' : 'Añadir hábito'}
         >
-          {full ? 'Máximo 10 hábitos este mes' : '+'}
+          {full ? 'Máximo 10 hábitos este mes' : '+ Añadir hábito'}
         </SketchButton>
-        {data.habits && Object.keys(data.habits).length > 0 && (
+        {showTip && dayHabits.length > 0 && (
           <p className="tip">Mantén pulsado un hábito para editarlo, archivarlo o moverlo.</p>
         )}
       </main>
