@@ -7,6 +7,7 @@ import { MoodScreen } from './features/MoodScreen'
 import { NewMonthPage } from './features/NewMonthPage'
 import { StatsScreen } from './features/StatsScreen'
 import { SketchButton } from './ui/Modal'
+import { Ribbon, SketchBox } from './ui/sketch'
 import { firebaseConfigured, useApp } from './store'
 
 export function App() {
@@ -60,6 +61,7 @@ export function App() {
 }
 
 function LoginScreen() {
+  const today = useApp((s) => s.today)
   const [error, setError] = useState('')
   const login = async () => {
     setError('')
@@ -72,7 +74,16 @@ function LoginScreen() {
   }
   return (
     <main className="screen login">
-      <h1 className="month-title">Mi cuaderno</h1>
+      {/* Portada: tapa rayada a lápiz con la etiqueta pegada y la cinta asomando */}
+      <div className="cover">
+        <SketchBox seed="cover" radius={16} fill="var(--pencil-fill)" className="cover-board">
+          <SketchBox seed="cover-label" radius={8} fill="var(--paper)" fillStyle="solid" className="cover-label">
+            <h1 className="month-title">Mis hábitos</h1>
+            <p className="cover-sub">cuaderno de {today.slice(0, 4)}</p>
+          </SketchBox>
+        </SketchBox>
+        <span className="cover-ribbon" aria-hidden="true"><Ribbon length={84} /></span>
+      </div>
       <p className="intro">Hábitos, estadísticas y ánimo, como en un cuaderno de papel.</p>
       <SketchButton seed="login" variant="primary" onClick={login}>Entrar con Google</SketchButton>
       {error && <p className="error" role="alert">{error}</p>}

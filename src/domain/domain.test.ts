@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { addDays, addMonths, daysInMonth, logicalToday, monthDays, monthLabel, weekdayMon0 } from './dates'
-import { dayScore, scoreColor } from './mood'
+import { dayScore, monthMoodSummary, scoreColor } from './mood'
 import { habitsForDay, isEditable } from './rules'
 import { bestStreakInMonth, currentStreak, habitMonthStats } from './stats'
 import type { DataState, DayEntry, Habit, MoodMetric } from './types'
@@ -121,6 +121,23 @@ describe('mood', () => {
     for (let i = 0; i <= 100; i++) {
       expect((scoreLum(i / 10) + 0.05) / (ink + 0.05)).toBeGreaterThanOrEqual(4.5)
     }
+  })
+
+  it('resume el mes: días anotados, media y emoción más repetida, sin contar días futuros', () => {
+    const days: Record<string, DayEntry> = {
+      '2026-09-01': { id: '2026-09-01', ratings: { mot: 8 }, emotion: 'feliz' },
+      '2026-09-02': { id: '2026-09-02', ratings: { mot: 6, per: 6 }, emotion: 'tranquilo' },
+      '2026-09-03': { id: '2026-09-03', emotion: 'tranquilo' },
+      '2026-09-04': { id: '2026-09-04', sentence: 'solo frase' },
+      '2026-08-31': { id: '2026-08-31', ratings: { mot: 1 }, emotion: 'triste' },
+      '2026-09-30': { id: '2026-09-30', ratings: { mot: 0 }, emotion: 'enfadado' },
+    }
+    // 01: 8 · 02: (6 + (10 - 6)) / 2 = 5 → media 6,5. El 04 solo tiene frase: no cuenta como anotado
+    expect(monthMoodSummary(days, metrics, '2026-09', '2026-09-27')).toEqual({ logged: 3, avg: 6.5, topEmotion: 'tranquilo', topCount: 2 })
+  })
+
+  it('un mes sin ánimo anotado no tiene resumen', () => {
+    expect(monthMoodSummary({}, metrics, '2026-09', '2026-09-27')).toEqual({ logged: 0, avg: null, topEmotion: null, topCount: 0 })
   })
 })
 
