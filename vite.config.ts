@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: 'Mi cuaderno de hábitos',
-        short_name: 'Cuaderno',
+        name: 'Mis hábitos',
+        short_name: 'Mis hábitos',
         description: 'Habit tracker con aspecto de cuaderno',
         lang: 'es',
         theme_color: '#fbf8f1',
@@ -20,18 +20,8 @@ export default defineConfig({
         icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
       },
       workbox: {
-        // Las fuentes vienen de CDN: se cachean para que la app funcione sin conexión
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net)\/.*/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'fuentes',
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-        ],
+        // La fuente se sirve desde la app: entra en el precache y funciona sin conexión desde la primera visita
+        globPatterns: ['**/*.{js,css,html,svg,woff2}'],
       },
     }),
   ],

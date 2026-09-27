@@ -1,7 +1,8 @@
-/* Excalifont (OFL): solo el subconjunto latino, que incluye tildes, ñ, ¿ y ¡ */
+/* Excalifont (OFL, ver public/fonts/OFL.txt): solo el subconjunto latino, que incluye tildes, ñ, ¿ y ¡.
+   Servida desde la app y precargada en index.html: sin salto a Comic Sans ni dependencia de CDN */
 @font-face {
   font-family: 'Excalifont';
-  src: url('https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw@0.18.1/dist/prod/fonts/Excalifont/Excalifont-Regular-a88b72a24fb54c9f94e3b5fdaa7481c9.woff2') format('woff2');
+  src: url('/fonts/Excalifont-Regular.woff2') format('woff2');
   font-display: swap;
 }
 
@@ -10,19 +11,25 @@
   --dot: #d6cfbf;
   --ink: #2b2a27;
   --ink-soft: #625d53;
-  --ink-faint: #767062;
+  --ink-faint: #716b5e;
   --pencil-fill: #b9b3a6;
   --highlight: #f3dd8c;
   --stamp: #b3362f;
   --ribbon: #c85a54;
   --ribbon-edge: #8f3a35;
   --future: #ebe6da;
+  --desk: #e9e2d2;
   --focus: #2f64c9;
 
   --hand: 'Excalifont', 'Comic Sans MS', cursive;
   --radius: 12px;
   --gap: 12px;
   --nav-h: 64px;
+
+  /* Papel: rejilla de puntos + grano tenue (ruido SVG en tono tinta, sin imágenes externas) */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.16 0 0 0 0 0.15 0.05 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --paper-image: radial-gradient(circle, var(--dot) 1.1px, transparent 1.5px), var(--grain);
+  --paper-size: 22px 22px, 160px 160px;
 
   color-scheme: light;
 }
@@ -34,8 +41,8 @@ html, body { margin: 0; height: 100%; }
 body {
   background-color: var(--paper);
   /* Papel punteado tipo bullet journal */
-  background-image: radial-gradient(circle, var(--dot) 1.1px, transparent 1.5px);
-  background-size: 22px 22px;
+  background-image: var(--paper-image);
+  background-size: var(--paper-size);
   color: var(--ink);
   font-family: var(--hand);
   font-size: 18px;
@@ -143,7 +150,7 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .habit-list li { position: relative; transition: transform 120ms ease; }
 .habit-row { display: block; width: 100%; text-align: left; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .habit-row .sketch-box { display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; min-height: 56px; }
-.habit-row.lifted .sketch-box { background: var(--paper); box-shadow: 0 6px 14px rgb(0 0 0 / 0.12); border-radius: var(--radius); }
+.habit-row.lifted .sketch-box { background: var(--paper); box-shadow: 0 6px 14px rgb(98 93 83 / 0.22); border-radius: var(--radius); }
 .habit-row[aria-disabled='true'] { cursor: default; }
 .habit-name { flex: 1; font-size: 1.1em; }
 .sketch-check { flex: none; overflow: visible; }
@@ -232,8 +239,8 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .calendar-sheet {
   position: fixed; inset: 0; z-index: 20; overflow-y: auto;
   background-color: var(--paper);
-  background-image: radial-gradient(circle, var(--dot) 1.1px, transparent 1.5px);
-  background-size: 22px 22px;
+  background-image: var(--paper-image);
+  background-size: var(--paper-size);
   padding: calc(16px + env(safe-area-inset-top)) max(16px, calc(50vw - 224px)) 120px;
   animation: unfold 260ms ease-out;
 }
@@ -283,11 +290,22 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .legend { display: flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--ink-soft); font-size: 0.85em; }
 .legend-bar { flex: 1; height: 10px; border-radius: 6px; border: 1px solid var(--ink-soft); }
 
-.day-view h2 { margin: 4px 0 0; font-weight: 400; font-size: 1.6em; }
+/* Resumen del mes: nota a mano bajo la leyenda */
+.month-summary { margin-top: 22px; display: flex; flex-direction: column; gap: 8px; }
+.month-summary ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.month-summary li { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.month-summary .hint { margin: 0; font-size: 0.9em; }
+.summary-dot { width: 18px; height: 18px; flex: none; border-radius: 48% 52% 45% 55%; border: 1.5px solid color-mix(in srgb, var(--ink) 60%, transparent); }
+
+/* Título a todo el ancho y el sello debajo: al lado, "Solo lectura" partía el título en tres líneas */
+.day-head { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 16px; }
+.day-view h2 { margin: 4px 0 0; font-weight: 400; font-size: 1.6em; text-wrap: balance; }
 .day-title::first-letter { text-transform: uppercase; }
-.day-status { margin: 0 0 12px; color: var(--ink-soft); font-size: 0.85em; }
+/* El sello de la ficha va en el flujo, no posicionado como el de la cabecera */
+.stamp.stamp-inline { position: static; margin-left: 4px; white-space: nowrap; transform: rotate(-4deg); }
+.stamp.readonly { border-color: var(--ink-soft); color: var(--ink-soft); }
 .day-view section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.day-view h3 { margin: 0; font-size: 1.2em; font-weight: 400; text-decoration: underline wavy var(--ink-faint) 1px; text-underline-offset: 6px; }
+.day-view h3, .month-summary h3 { margin: 0; font-size: 1.2em; font-weight: 400; text-decoration: underline wavy var(--ink-faint) 1px; text-underline-offset: 6px; }
 
 /* --- Hojas emergentes y formularios --- */
 
@@ -323,13 +341,31 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .new-month, .login { padding-top: 32px; gap: 18px; }
 .new-month .month-title { font-size: 2.4em; }
 .kicker { margin: 0; color: var(--ink-soft); }
-.intro { margin: 0; color: var(--ink-soft); }
+.intro { margin: 0; color: var(--ink-soft); text-wrap: pretty; }
+
+.cover { position: relative; }
+.cover-board { min-height: min(52dvh, 420px); display: grid; place-items: center; padding: 28px 20px; }
+.cover-label { padding: 18px 24px 16px; text-align: center; transform: rotate(-1.5deg); }
+.cover-label .month-title { font-size: clamp(1.8em, 10.5vw, 2.4em); white-space: nowrap; }
+.cover-sub { margin: 6px 0 0; color: var(--ink-soft); letter-spacing: 0.03em; }
+.cover-ribbon { position: absolute; top: -4px; right: 28px; pointer-events: none; }
 .draft-list { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .draft-list .sketch-box { display: flex; align-items: center; padding: 4px 4px 4px 14px; }
 .draft-edit { flex: 1; text-align: left; display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ink); flex: none; }
 .remove { min-width: 44px; min-height: 44px; font-size: 1.4em; color: var(--ink-soft); }
 .start { margin-top: 8px; }
+
+/* Escritorio: la columna se convierte en una hoja sobre la mesa, con sombra en el tono de la tinta */
+@media (min-width: 700px) {
+  body { background-color: var(--desk); background-image: var(--grain); background-size: 160px 160px; }
+  .app {
+    background-color: var(--paper); background-image: var(--paper-image); background-size: var(--paper-size);
+    box-shadow: 0 0 0 1px rgb(98 93 83 / 0.12), 0 20px 50px -14px rgb(98 93 83 / 0.4);
+  }
+  .calendar-sheet, .calendar-sheet::after { left: calc(50vw - 240px); right: calc(50vw - 240px); }
+  .calendar-sheet { padding-left: 16px; padding-right: 16px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

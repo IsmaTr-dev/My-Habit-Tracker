@@ -1,5 +1,5 @@
 import { dayOfMonth, monthDays, monthName, monthOf, WEEKDAYS_ES, weekdayMon0, addMonths } from '../domain/dates'
-import { dayScore, scoreColor } from '../domain/mood'
+import { dayScore, monthMoodSummary, scoreColor } from '../domain/mood'
 import { isEditable } from '../domain/rules'
 import { EMOTIONS, type DataState, type ISODate, type MonthKey } from '../domain/types'
 import { calendarBack, openCalendar, replaceCalendar, useApp, type CalendarView } from '../store'
@@ -125,7 +125,41 @@ function MonthView({ month }: { month: MonthKey }) {
       <div className="legend" aria-hidden="true">
         <span>0</span><span className="legend-bar" style={{ background: LEGEND_GRADIENT }} /><span>10</span>
       </div>
+      <MonthSummary month={month} />
     </>
+  )
+}
+
+// Nota al pie del mes: cuántos días se anotó el ánimo, la media y la emoción más repetida
+function MonthSummary({ month }: { month: MonthKey }) {
+  const data = useApp((s) => s.data)
+  const today = useApp((s) => s.today)
+  const { logged, avg, topEmotion, topCount } = monthMoodSummary(data.days, data.metrics, month, today)
+  const emotion = EMOTIONS.find((e) => e.id === topEmotion)
+
+  return (
+    <section className="month-summary" aria-label="Resumen del mes">
+      <h3>Resumen</h3>
+      {logged === 0 ? (
+        <p className="hint">{month === monthOf(today) ? 'Aún no has anotado el ánimo este mes.' : 'No anotaste el ánimo este mes.'}</p>
+      ) : (
+        <ul>
+          <li>{logged} {logged === 1 ? 'día anotado' : 'días anotados'}</li>
+          {avg !== null && (
+            <li>
+              <span className="summary-dot" style={{ background: scoreColor(avg) }} aria-hidden="true" />
+              Media {avg.toLocaleString('es-ES', { maximumFractionDigits: 1 })}
+            </li>
+          )}
+          {emotion && (
+            <li>
+              <DoodleFace emotion={emotion.id} size={24} />
+              Más veces {emotion.label.toLowerCase()} ({topCount} {topCount === 1 ? 'día' : 'días'})
+            </li>
+          )}
+        </ul>
+      )}
+    </section>
   )
 }
 
@@ -134,10 +168,15 @@ function DayView({ date }: { date: ISODate }) {
   const editable = isEditable(date, today)
   return (
     <div className="day-view">
-      <h2 className="day-title">
-        {WEEKDAY_NAMES[weekdayMon0(date)]}, {dayOfMonth(date)} de {monthName(monthOf(date)).toLowerCase()}
-      </h2>
-      <p className="day-status">{editable ? 'Puedes editar este día' : 'Solo lectura'}</p>
+      <div className="day-head">
+        <h2 className="day-title">
+          {WEEKDAY_NAMES[weekdayMon0(date)]}, {dayOfMonth(date)} de {monthName(monthOf(date)).toLowerCase()}
+        </h2>
+        {/* Sello como el de la cabecera: hoy y ayer se pueden editar; el resto es solo lectura */}
+        <span className={`stamp stamp-inline ${editable ? '' : 'readonly'}`}>
+          {date === today ? 'Hoy' : editable ? 'Ayer' : 'Solo lectura'}
+        </span>
+      </div>
       <section aria-label="Hábitos">
         <h3>Hábitos</h3>
         <HabitChecklist date={date} readOnly={!editable} />

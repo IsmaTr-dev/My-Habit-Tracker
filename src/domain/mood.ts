@@ -1,4 +1,4 @@
-import type { DayEntry, MoodMetric } from './types'
+import { EMOTIONS, type DayEntry, type EmotionId, type ISODate, type MonthKey, type MoodMetric } from './types'
 
 // Media de los ítems valorados; los de polaridad negativa se invierten (Pereza 8 cuenta como 2)
 export function dayScore(entry: DayEntry | undefined, metrics: Record<string, MoodMetric>): number | null {
@@ -29,4 +29,32 @@ export function scoreColor(score: number): string {
   const mix = (a: number, b: number) => a + (b - a) * t
   const hue = (mix(h0, h1) + 360) % 360
   return `hsl(${hue.toFixed(0)} ${mix(sa0, sa1).toFixed(0)}% ${mix(l0, l1).toFixed(0)}%)`
+}
+
+export interface MonthMoodSummary {
+  // Días con nota o emoción (una frase sola no cuenta como ánimo anotado)
+  logged: number
+  avg: number | null
+  topEmotion: EmotionId | null
+  topCount: number
+}
+
+// Resumen del mes hasta hoy. Empate en la emoción: gana la primera del catálogo
+export function monthMoodSummary(
+  days: Record<ISODate, DayEntry>,
+  metrics: Record<string, MoodMetric>,
+  month: MonthKey,
+  today: ISODate,
+): MonthMoodSummary {
+  const entries = Object.values(days).filter((d) => d.id.startsWith(`${month}-`) && d.id <= today)
+  const scores = entries.map((d) => dayScore(d, metrics)).filter((s): s is number => s !== null)
+  const logged = entries.filter((d) => dayScore(d, metrics) !== null || d.emotion).length
+  const counts = EMOTIONS.map((e) => ({ id: e.id, n: entries.filter((d) => d.emotion === e.id).length }))
+  const top = counts.reduce((best, c) => (c.n > best.n ? c : best), { id: null as EmotionId | null, n: 0 })
+  return {
+    logged,
+    avg: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null,
+    topEmotion: top.id,
+    topCount: top.n,
+  }
 }

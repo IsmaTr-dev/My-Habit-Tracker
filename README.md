@@ -1,4 +1,4 @@
-# Mi cuaderno — Habit Tracker
+# Mis hábitos — Habit Tracker
 
 PWA con aspecto de bullet journal: hábitos diarios, estadísticas mensuales, estado de ánimo y calendario. Especificación en [DECISIONES.md](DECISIONES.md) y en el briefing.
 
