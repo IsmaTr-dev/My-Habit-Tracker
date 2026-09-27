@@ -97,10 +97,29 @@ describe('mood', () => {
     expect(dayScore({ id: 'd', emotion: 'feliz' }, metrics)).toBeNull()
   })
 
+  // Luminancia relativa WCAG: lo que percibe el ojo (la "L" de HSL no sirve, un amarillo al 63 % es mucho más claro que un rojo al 63 %)
+  const lum = ([r, g, b]: number[]) => {
+    const f = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+  }
+  const hslToRgb = (c: string) => {
+    const [h, s, l] = (c.match(/[\d.]+/g) ?? []).map(Number)
+    const a = (s / 100) * Math.min(l / 100, 1 - l / 100)
+    const k = (n: number) => (n + h / 30) % 12
+    return [0, 8, 4].map((n) => l / 100 - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)))
+  }
+  const scoreLum = (score: number) => lum(hslToRgb(scoreColor(score)))
+
   it('la escala gana luminosidad de rojo a verde', () => {
-    const light = (c: string) => Number(c.match(/(\d+)%\)$/)?.[1])
-    expect(light(scoreColor(0))).toBeLessThan(light(scoreColor(5)))
-    expect(light(scoreColor(5))).toBeLessThan(light(scoreColor(10)))
+    expect(scoreLum(0)).toBeLessThan(scoreLum(5))
+    expect(scoreLum(5)).toBeLessThan(scoreLum(10))
+  })
+
+  it('la tinta (--ink) se lee sobre cualquier color de la escala (WCAG AA, 4,5:1)', () => {
+    const ink = lum([0x2b, 0x2a, 0x27].map((v) => v / 255))
+    for (let i = 0; i <= 100; i++) {
+      expect((scoreLum(i / 10) + 0.05) / (ink + 0.05)).toBeGreaterThanOrEqual(4.5)
+    }
   })
 })
 

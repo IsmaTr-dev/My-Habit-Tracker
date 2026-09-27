@@ -120,7 +120,8 @@ export function SketchBar({ pct, color, seed }: { pct: number; color: string; se
   const bar = useMemo(
     () => (w && fillW > 2
       ? gen.rectangle(4, 5, fillW, h - 10, {
-        stroke: 'none', fill: color, fillStyle: 'hachure', hachureGap: 5, fillWeight: 2.2, hachureAngle: -50, roughness: 1.2, seed: s + 3,
+        // Rayado con un 15 % de tinta y trazo más grueso: los pasteles claros (amarillo, verde) apenas se veían sobre el papel
+        stroke: 'none', fill: `color-mix(in srgb, ${color} 85%, var(--ink))`, fillStyle: 'hachure', hachureGap: 5, fillWeight: 3, hachureAngle: -50, roughness: 1.2, seed: s + 3,
       })
       : null),
     [w, fillW, color, s],
@@ -140,6 +141,24 @@ export function SketchCircle({ size, seed }: { size: number; seed: string }) {
   const d = useMemo(() => gen.circle(size / 2, size / 2, size - 6, { ...INK, seed: seedOf(seed) }), [size, seed])
   return (
     <svg className="sketch-svg" width={size} height={size} aria-hidden="true">
+      <Paths drawable={d} />
+    </svg>
+  )
+}
+
+// Flecha dibujada: Excalifont no trae ↑ ni ↓. Toma el color del texto que la rodea
+export function SketchArrow({ dir, size = 11, seed }: { dir: 'up' | 'down'; size?: number; seed: string }) {
+  const d = useMemo(() => {
+    const mid = size / 2
+    const tip = dir === 'up' ? 1 : size - 1
+    const tail = dir === 'up' ? size - 1 : 1
+    const wing = tip + (dir === 'up' ? 1 : -1) * size * 0.4
+    return gen.path(`M${mid} ${tail} L${mid} ${tip} M${mid - size * 0.34} ${wing} L${mid} ${tip} L${mid + size * 0.34} ${wing}`, {
+      stroke: 'currentColor', strokeWidth: 1.4, roughness: 0.5, bowing: 0.3, seed: seedOf(seed),
+    })
+  }, [dir, size, seed])
+  return (
+    <svg className="sketch-arrow" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true" overflow="visible">
       <Paths drawable={d} />
     </svg>
   )

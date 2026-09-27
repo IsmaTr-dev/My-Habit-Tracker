@@ -13,7 +13,8 @@ export function dayScore(entry: DayEntry | undefined, metrics: Record<string, Mo
 // Escala rojo → amarillo → verde con luminosidad creciente, legible con daltonismo rojo-verde
 const STOPS: ReadonlyArray<[number, number, number, number]> = [
   // [puntuación, tono, saturación, luminosidad]
-  [0, -4, 62, 50],
+  // Rojo al 66 %: la tinta del número del día mantiene contraste ≥ 4,5:1 en toda la escala
+  [0, -4, 62, 66],
   [5, 42, 88, 63],
   [10, 135, 45, 72],
 ]

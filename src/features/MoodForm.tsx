@@ -6,7 +6,7 @@ import { ActionMenu, MetricEditor } from '../ui/editors'
 import { Modal, SketchButton } from '../ui/Modal'
 import { DoodleFace } from '../ui/DoodleFace'
 import { DotScale } from '../ui/DotScale'
-import { SketchBox, SketchCircle } from '../ui/sketch'
+import { SketchArrow, SketchBox, SketchCircle } from '../ui/sketch'
 
 const SAVE_DELAY_MS = 600
 
@@ -208,7 +208,10 @@ function MetricSlider({ metric, value, readOnly, onChange, onLongPress }: Slider
             onContextMenu={(e) => e.preventDefault()}
           >
             {metric.name}
-            <small className="polarity-hint">{metric.polarity === 'higher_better' ? ' ↑ mejor' : ' ↓ mejor'}</small>
+            {/* La polaridad ya va en la etiqueta del slider: aquí es solo la pista visual */}
+            <small className="polarity-hint" aria-hidden="true">
+              <SketchArrow dir={metric.polarity === 'higher_better' ? 'up' : 'down'} seed={`arrow-${metric.id}`} />mejor
+            </small>
           </span>
           <span className="metric-value" aria-hidden="true">{value ?? '–'}</span>
         </div>

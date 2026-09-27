@@ -14,16 +14,16 @@ Bullet journal escrito a mano: papel punteado, trazos imperfectos (rough.js, mot
 | `--dot` | `#d6cfbf` | Rejilla de puntos, 22 px |
 | `--ink` | `#2b2a27` | Texto y trazos |
 | `--ink-soft` | `#625d53` | Texto secundario, "ayer" |
-| `--ink-faint` | `#8f897c` | Placeholders y pistas |
+| `--ink-faint` | `#767062` | Placeholders y pistas (4,6:1 sobre el papel) |
 | `--pencil-fill` | `#b9b3a6` | Rayado de la pestaña activa |
 | `--highlight` | `#f3dd8c` | Botón principal (rayado amarillo) |
 | `--stamp` | `#b3362f` | Sello "AYER" y errores |
 | `--ribbon` / `--ribbon-edge` | `#c85a54` / `#8f3a35` | Cinta marcapáginas |
 | `--future` | `#ebe6da` | Días futuros |
 
-**Hábitos:** 10 pasteles (`PASTELS` en `src/domain/types.ts`), uno por hábito, relleno rayado.
+**Hábitos:** 10 pasteles (`PASTELS` en `src/domain/types.ts`), uno por hábito, relleno rayado. En las barras de Stats el rayado lleva un 15 % de tinta para que los pasteles claros se vean sobre el papel.
 
-**Ánimo:** escala rojo `hsl(356 62% 50%)` → amarillo `hsl(42 88% 63%)` → verde `hsl(135 45% 72%)` con luminosidad creciente (legible con daltonismo rojo-verde). En la escala de puntos el relleno toma el color de la nota ya ajustada a la polaridad: Pereza 2 se pinta verde.
+**Ánimo:** escala rojo `hsl(356 62% 66%)` → amarillo `hsl(42 88% 63%)` → verde `hsl(135 45% 72%)` con luminancia creciente (legible con daltonismo rojo-verde). La tinta se lee sobre cualquier punto de la escala (≥ 4,5:1, cubierto por test). En la escala de puntos el relleno toma el color de la nota ya ajustada a la polaridad: Pereza 2 se pinta verde.
 
 ## Tipografía
 

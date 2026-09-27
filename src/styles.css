@@ -10,7 +10,7 @@
   --dot: #d6cfbf;
   --ink: #2b2a27;
   --ink-soft: #625d53;
-  --ink-faint: #8f897c;
+  --ink-faint: #767062;
   --pencil-fill: #b9b3a6;
   --highlight: #f3dd8c;
   --stamp: #b3362f;
@@ -188,7 +188,8 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .metric { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px 8px; }
 .metric-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .metric-name { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-.polarity-hint { color: var(--ink-faint); font-size: 0.75em; }
+.polarity-hint { color: var(--ink-faint); font-size: 0.75em; margin-left: 6px; white-space: nowrap; }
+.sketch-arrow { vertical-align: -1px; margin-right: 2px; }
 .metric-value { font-weight: 600; min-width: 1.4em; text-align: right; }
 
 /* Escala de puntos: toda la fila es el control (arrastrar o tocar) */
@@ -221,7 +222,13 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
   animation: unfold 260ms ease-out;
 }
 @keyframes unfold { from { transform: translateY(-40px); opacity: 0; } }
-.calendar-sheet .ribbon { position: fixed; top: auto; bottom: 0; right: max(12px, calc(50vw - 228px)); padding: 8px 4px 0; transform: rotate(180deg); }
+.calendar-sheet .ribbon { position: fixed; top: auto; bottom: 0; right: max(12px, calc(50vw - 228px)); padding: 8px 4px 0; transform: rotate(180deg); z-index: 1; }
+/* Franja de papel bajo la cinta: el contenido se funde antes de pasar por debajo, como en la barra inferior */
+.calendar-sheet::after {
+  content: ''; position: fixed; left: 0; right: 0; bottom: 0; pointer-events: none;
+  height: calc(76px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--paper) 60%, transparent);
+}
 
 .breadcrumbs { font-size: 1.2em; margin-bottom: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .crumb { min-height: 44px; padding: 0 4px; text-decoration: underline dotted var(--ink-faint); text-underline-offset: 5px; }
@@ -248,7 +255,7 @@ input, textarea { background: transparent; border: 0; outline: none; width: 100%
 .day-cell .num { font-size: 0.95em; }
 .day-cell .doodle-face { margin-top: -2px; }
 .legend { display: flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--ink-soft); font-size: 0.85em; }
-.legend-bar { flex: 1; height: 10px; border-radius: 6px; border: 1px solid var(--ink-soft); background: linear-gradient(90deg, hsl(356 62% 50%), hsl(42 88% 63%), hsl(135 45% 72%)); }
+.legend-bar { flex: 1; height: 10px; border-radius: 6px; border: 1px solid var(--ink-soft); background: linear-gradient(90deg, hsl(356 62% 66%), hsl(42 88% 63%), hsl(135 45% 72%)); }
 
 .day-view h2 { margin: 4px 0 0; font-weight: 400; font-size: 1.6em; }
 .day-title::first-letter { text-transform: uppercase; }
